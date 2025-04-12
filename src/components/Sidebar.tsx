@@ -31,8 +31,13 @@ export function Sidebar() {
 
   return (
     <div className="w-64 h-screen bg-background border-r flex flex-col">
-      <div className="p-6">
-        <h2 className="text-2xl font-bold">Stake Manager</h2>
+      <div className="p-6 border-b">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span className="text-lg font-bold text-primary-foreground">S</span>
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight">Stake Manager</h2>
+        </div>
       </div>
       
       <div className="flex-1 px-4">

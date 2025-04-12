@@ -28,6 +28,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { useBalance } from "@/context/BalanceContext";
 
 type Bet = {
   team1: {
@@ -67,6 +68,7 @@ function CurrentBetPage() {
   const clerkId = user?.id || "";
   const accounts = useQuery(api.users.getUserAccounts, { clerkId }) || [];
   const settleBet = useMutation(api.users.settleBet);
+  const { initialBalance, setInitialBalance } = useBalance();
   
   const [expandedMatch, setExpandedMatch] = useState<string | null>(null);
   const [isSettleDialogOpen, setIsSettleDialogOpen] = useState(false);
@@ -139,6 +141,10 @@ function CurrentBetPage() {
     }
     
     try {
+      // Set initial balance before settling the bet
+      const currentTotalBalance = accounts.reduce((sum, account) => sum + account.totalBalance, 0);
+      setInitialBalance(currentTotalBalance);
+
       toast.promise(
         settleBet({
           clerkId,

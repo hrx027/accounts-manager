@@ -341,3 +341,51 @@ export const settleBet = mutation({
         };
     }
 });
+
+export const updateAccountBalance = mutation({
+    args: {
+        clerkId: v.string(),
+        accountId: v.string(),
+        amount: v.number(),
+        type: v.union(v.literal("deposit"), v.literal("withdrawal")),
+    },
+    handler: async (ctx, args) => {
+        const user = await ctx.db.query("users")
+            .filter(q => q.eq(q.field("clerkId"), args.clerkId))
+            .first();
+        
+        if (!user) {
+            throw new Error("User not found");
+        }
+        
+        const accountIndex = user.accounts.findIndex((account: any) => account.id === args.accountId);
+        
+        if (accountIndex === -1) {
+            throw new Error("Account not found");
+        }
+        
+        // Create updated account
+        const updatedAccount = {
+            ...user.accounts[accountIndex],
+            totalBalance: args.type === "deposit" 
+                ? user.accounts[accountIndex].totalBalance + args.amount
+                : user.accounts[accountIndex].totalBalance - args.amount,
+        };
+        
+        // Validate withdrawal
+        if (args.type === "withdrawal" && updatedAccount.totalBalance < 0) {
+            throw new Error("Insufficient balance for withdrawal");
+        }
+        
+        // Create new accounts array with the updated account
+        const updatedAccounts = [...user.accounts];
+        updatedAccounts[accountIndex] = updatedAccount;
+        
+        // Update user with new accounts array
+        await ctx.db.patch(user._id, {
+            accounts: updatedAccounts,
+        });
+        
+        return updatedAccount;
+    }
+});

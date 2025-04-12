@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import ConvexClerkProvider from '@/components/providers/ConvexClerkProvider'
 import { Toaster } from '@/components/ui/sonner'
+import { BalanceProvider } from "@/context/BalanceContext";
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -26,12 +27,14 @@ export default function RootLayout({
 }>) {
   return (
     <ConvexClerkProvider>
-      <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          {children}
-          <Toaster />
-        </body>
-      </html>
+      <BalanceProvider>
+        <html lang="en">
+          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            {children}
+            <Toaster />
+          </body>
+        </html>
+      </BalanceProvider>
     </ConvexClerkProvider>
   )
 }
