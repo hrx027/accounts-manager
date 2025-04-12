@@ -15,7 +15,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { UserButton } from "@clerk/nextjs";
 import { useState } from "react";
 
@@ -28,24 +27,56 @@ type Account = {
   bets: any[];
 };
 
-type ActionType = "deposit" | "withdraw" | null;
+type User = {
+  _id: string;
+  name: string;
+  email: string;
+  image?: string;
+  clerkId: string;
+  totalBalanceSum?: number;
+  totalBalanceSumBeforePlacingBet?: number;
+  totalBalanceSumAfterSettlingBets?: number;
+  profitOrLoss?: number;
+  accounts: Account[];
+};
+
+type ActionType = "deposit" | "withdrawal" | null;
 
 function DashboardPage() {
   const { user } = useUser();
   const clerkId = user?.id || "";
-  const accounts = useQuery(api.users.getUserAccounts, { clerkId }) || [];
+  const userData = useQuery(api.users.getUser, { clerkId }) as User | undefined;
+  const accounts = userData?.accounts || [];
   const updateBalance = useMutation(api.users.updateAccountBalance);
+  const resetProfit = useMutation(api.users.resetProfitLoss);
   
-  const [amounts, setAmounts] = useState<Record<string, number>>({});
+  const [activeAccount, setActiveAccount] = useState<string | null>(null);
   const [activeAction, setActiveAction] = useState<ActionType>(null);
-  const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
+  const [actionAmount, setActionAmount] = useState<number>(0);
+
+  // Get profitOrLoss from user data
+  const profitOrLoss = userData?.profitOrLoss || 0;
+  const isProfitable = profitOrLoss >= 0;
 
   // Calculate total balance across all accounts
-  const totalBalance = accounts.reduce((sum, account) => sum + account.totalBalance, 0);
+  const totalBalance = accounts.reduce((sum: number, account: Account) => sum + account.totalBalance, 0);
 
-  const handleAction = async (accountId: string) => {
-    const amount = amounts[accountId];
-    if (!amount || amount <= 0) {
+  const handleActionClick = (accountId: string, action: ActionType) => {
+    if (activeAccount === accountId && activeAction === action) {
+      // Toggle off if clicking the same action
+      setActiveAccount(null);
+      setActiveAction(null);
+    } else {
+      setActiveAccount(accountId);
+      setActiveAction(action);
+      setActionAmount(0);
+    }
+  };
+
+  const handleActionSubmit = async () => {
+    if (!activeAccount || !activeAction) return;
+    
+    if (!actionAmount || actionAmount <= 0) {
       toast.error(`Please enter a valid ${activeAction} amount`);
       return;
     }
@@ -53,51 +84,64 @@ function DashboardPage() {
     try {
       await updateBalance({
         clerkId,
-        accountId,
-        amount,
-        type: activeAction === "deposit" ? "deposit" : "withdrawal"
+        accountId: activeAccount,
+        amount: actionAmount,
+        type: activeAction
       });
-      setAmounts(prev => ({ ...prev, [accountId]: 0 }));
+      setActionAmount(0);
+      setActiveAccount(null);
       setActiveAction(null);
-      setSelectedAccount(null);
-      toast.success(`${activeAction === "deposit" ? "Deposit" : "Withdrawal"} successful!`);
+      toast.success(`${activeAction === 'deposit' ? 'Deposit' : 'Withdrawal'} successful!`);
     } catch (error) {
-      toast.error(`Failed to ${activeAction}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Failed to process ${activeAction}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
-  const handleActionButtonClick = (action: ActionType) => {
-    setActiveAction(prev => prev === action ? null : action);
-    setSelectedAccount(null);
+  const handleResetProfitLoss = async () => {
+    try {
+      await resetProfit({ clerkId });
+      toast.success("Profit/Loss reset to zero successfully!");
+    } catch (error) {
+      toast.error(`Failed to reset Profit/Loss: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   return (
     <div className="p-6 space-y-6">
-      <div className="grid grid-cols-2 gap-6">
-        {/* Left div with total balance */}
-        <Card>
-          <CardHeader>
+      {/* Header with UserButton */}
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <UserButton afterSignOutUrl="/" />
+      </div>
+
+      {/* Financial cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Total balance card */}
+        <Card className="shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="pb-2">
             <CardTitle>Total Balance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4">
-              <div className="text-3xl font-bold">₹{totalBalance.toFixed(2)}</div>
-              <div className="text-muted-foreground">|</div>
-              <div className="text-green-500">Profit: ₹0.00</div>
-            </div>
+            <div className="text-3xl font-bold">₹{totalBalance.toFixed(2)}</div>
           </CardContent>
         </Card>
 
-        {/* Right div with user info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>User Profile</CardTitle>
+        {/* Profit/Loss card */}
+        <Card className="shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle>{isProfitable ? 'Profit' : 'Loss'}</CardTitle>
+            <Button
+              onClick={handleResetProfitLoss}
+              variant="outline"
+              size="sm"
+              className="h-8"
+            >
+              Reset
+            </Button>
           </CardHeader>
-          <CardContent className="flex items-center gap-4">
-            <UserButton afterSignOutUrl="/" />
-            <div>
-              <div className="font-semibold">{user?.fullName}</div>
-              <div className="text-sm text-muted-foreground">{user?.primaryEmailAddress?.emailAddress}</div>
+          <CardContent>
+            <div className={`text-3xl font-bold ${isProfitable ? 'text-green-500' : 'text-red-500'}`}>
+              ₹{Math.abs(profitOrLoss).toFixed(2)}
             </div>
           </CardContent>
         </Card>
@@ -105,24 +149,8 @@ function DashboardPage() {
 
       {/* Accounts table */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle>Accounts</CardTitle>
-          <div className="flex gap-2">
-            <Button 
-              variant={activeAction === "deposit" ? "default" : "outline"}
-              onClick={() => handleActionButtonClick("deposit")}
-              className={activeAction === "deposit" ? "bg-green-500 hover:bg-green-600" : ""}
-            >
-              {activeAction === "deposit" ? "Cancel Deposit" : "Deposit"}
-            </Button>
-            <Button 
-              variant={activeAction === "withdraw" ? "default" : "outline"}
-              onClick={() => handleActionButtonClick("withdraw")}
-              className={activeAction === "withdraw" ? "bg-red-500 hover:bg-red-600" : ""}
-            >
-              {activeAction === "withdraw" ? "Cancel Withdraw" : "Withdraw"}
-            </Button>
-          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -130,56 +158,64 @@ function DashboardPage() {
               <TableRow>
                 <TableHead>Email</TableHead>
                 <TableHead className="text-right">Balance</TableHead>
-                {activeAction && <TableHead className="text-center">Amount</TableHead>}
-                {activeAction && <TableHead className="text-center">Action</TableHead>}
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {accounts.map((account: Account) => (
-                <TableRow 
-                  key={account.id}
-                  className={selectedAccount === account.id ? "bg-muted/50" : ""}
-                >
+                <TableRow key={account.id}>
                   <TableCell>{account.email}</TableCell>
                   <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
-                  {activeAction && (
-                    <>
-                      <TableCell>
-                        <div className="flex justify-center">
+                  <TableCell>
+                    <div className="flex justify-end gap-2">
+                      {activeAccount === account.id && activeAction ? (
+                        <>
                           <Input
                             type="number"
                             min="0"
                             step="0.01"
-                            value={amounts[account.id] || ""}
-                            onChange={(e) => {
-                              setAmounts(prev => ({
-                                ...prev,
-                                [account.id]: parseFloat(e.target.value) || 0
-                              }));
-                              setSelectedAccount(account.id);
-                            }}
-                            placeholder="Enter amount"
-                            className="w-40 text-center"
+                            value={actionAmount || ""}
+                            onChange={(e) => setActionAmount(parseFloat(e.target.value) || 0)}
+                            placeholder="Amount"
+                            className="w-32"
                           />
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-center">
                           <Button 
                             size="sm"
-                            onClick={() => handleAction(account.id)}
-                            className={
-                              activeAction === "deposit" 
-                                ? "bg-green-500 hover:bg-green-600" 
-                                : "bg-red-500 hover:bg-red-600"
-                            }
+                            variant={activeAction === "deposit" ? "default" : "outline"}
+                            onClick={handleActionSubmit}
                           >
                             {activeAction === "deposit" ? "Deposit" : "Withdraw"}
                           </Button>
-                        </div>
-                      </TableCell>
-                    </>
-                  )}
+                          <Button 
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setActiveAccount(null);
+                              setActiveAction(null);
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button 
+                            size="sm"
+                            onClick={() => handleActionClick(account.id, "deposit")}
+                          >
+                            Deposit
+                          </Button>
+                          <Button 
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleActionClick(account.id, "withdrawal")}
+                          >
+                            Withdraw
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

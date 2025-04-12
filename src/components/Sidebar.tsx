@@ -40,7 +40,7 @@ export function Sidebar() {
         </div>
       </div>
       
-      <div className="flex-1 px-4">
+      <div className="flex-1 px-4 mt-4">
         <nav className="space-y-2">
           {sidebarItems.map((item) => {
             const isActive = pathname === item.href;

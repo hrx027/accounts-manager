@@ -28,7 +28,6 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { useBalance } from "@/context/BalanceContext";
 
 type Bet = {
   team1: {
@@ -68,7 +67,6 @@ function CurrentBetPage() {
   const clerkId = user?.id || "";
   const accounts = useQuery(api.users.getUserAccounts, { clerkId }) || [];
   const settleBet = useMutation(api.users.settleBet);
-  const { initialBalance, setInitialBalance } = useBalance();
   
   const [expandedMatch, setExpandedMatch] = useState<string | null>(null);
   const [isSettleDialogOpen, setIsSettleDialogOpen] = useState(false);
@@ -141,9 +139,7 @@ function CurrentBetPage() {
     }
     
     try {
-      // Set initial balance before settling the bet
-      const currentTotalBalance = accounts.reduce((sum, account) => sum + account.totalBalance, 0);
-      setInitialBalance(currentTotalBalance);
+      // Start settling bets
 
       toast.promise(
         settleBet({
@@ -206,8 +202,8 @@ function CurrentBetPage() {
   }, [accounts]);
   
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Current Matches</h1>
+    <div className="container mx-auto py-8 px-6">
+      <h1 className="text-2xl font-bold mb-6">Current Matches</h1>
       
       {matches.length === 0 ? (
         <Card>
@@ -320,7 +316,7 @@ function CurrentBetPage() {
       )}
       
       <Dialog open={isSettleDialogOpen} onOpenChange={setIsSettleDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle>Settle Bet</DialogTitle>
             <DialogDescription>
@@ -328,7 +324,7 @@ function CurrentBetPage() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="py-4 space-y-6">
+          <div className="py-4 space-y-6 overflow-y-auto pr-2">
             <div className="space-y-4">
               <h4 className="font-medium">Which team won?</h4>
               <RadioGroup 
@@ -414,7 +410,7 @@ function CurrentBetPage() {
             </div>
           </div>
           
-          <DialogFooter>
+          <DialogFooter className="pt-2 border-t mt-2">
             <Button variant="ghost" onClick={() => setIsSettleDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleSubmitSettleBet}>Settle Bet</Button>
           </DialogFooter>

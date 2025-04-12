@@ -201,9 +201,9 @@ function AccountDetailsPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Account Details</h1>
+        <h1 className="text-2xl font-bold">Account Details</h1>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
