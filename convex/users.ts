@@ -372,12 +372,16 @@ export const settleBet = mutation({
         // Calculate profit or loss (difference between after settling and before placing)
         const profitOrLoss = totalBalanceSumAfterSettlingBets - (user.totalBalanceSumBeforePlacingBet || 0);
         
+        // Calculate net profit or loss by adding current profit/loss to previous net profit/loss
+        const netProfitOrLoss = (user.netProfitOrLoss || 0) + profitOrLoss;
+        
         // Update user with new account balances, filtered bets, and profit/loss data
         await ctx.db.patch(user._id, {
             accounts: updatedAccounts,
             totalBalanceSum: totalBalanceSumAfterSettlingBets,
             totalBalanceSumAfterSettlingBets,
-            profitOrLoss
+            profitOrLoss,
+            netProfitOrLoss
         });
         
         return {
@@ -475,6 +479,7 @@ export const resetProfitLoss = mutation({
         // Reset profit/loss and balance sums to zero
         await ctx.db.patch(user._id, {
             profitOrLoss: 0,
+            netProfitOrLoss: 0,
             totalBalanceSumBeforePlacingBet: 0,
             totalBalanceSumAfterSettlingBets: 0
         });

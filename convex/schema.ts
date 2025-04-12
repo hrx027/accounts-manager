@@ -11,6 +11,7 @@ export default defineSchema({
     totalBalanceSumBeforePlacingBet: v.optional(v.number()), // Sum before placing a bet
     totalBalanceSumAfterSettlingBets: v.optional(v.number()), // Sum after settling bets
     profitOrLoss: v.optional(v.number()), // Difference between after and before settling
+    netProfitOrLoss: v.optional(v.number()), // Accumulated profit or loss over time
     accounts: v.array(
       v.object({
         id: v.string(),

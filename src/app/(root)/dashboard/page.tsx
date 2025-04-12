@@ -37,6 +37,7 @@ type User = {
   totalBalanceSumBeforePlacingBet?: number;
   totalBalanceSumAfterSettlingBets?: number;
   profitOrLoss?: number;
+  netProfitOrLoss?: number;
   accounts: Account[];
 };
 
@@ -54,9 +55,9 @@ function DashboardPage() {
   const [activeAction, setActiveAction] = useState<ActionType>(null);
   const [actionAmount, setActionAmount] = useState<number>(0);
 
-  // Get profitOrLoss from user data
-  const profitOrLoss = userData?.profitOrLoss || 0;
-  const isProfitable = profitOrLoss >= 0;
+  // Get netProfitOrLoss from user data instead of profitOrLoss
+  const netProfitOrLoss = userData?.netProfitOrLoss || 0;
+  const isProfitable = netProfitOrLoss >= 0;
 
   // Calculate total balance across all accounts
   const totalBalance = accounts.reduce((sum: number, account: Account) => sum + account.totalBalance, 0);
@@ -129,7 +130,7 @@ function DashboardPage() {
         {/* Profit/Loss card */}
         <Card className="shadow-md hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle>{isProfitable ? 'Profit' : 'Loss'}</CardTitle>
+            <CardTitle>{isProfitable ? 'Net Profit' : 'Net Loss'}</CardTitle>
             <Button
               onClick={handleResetProfitLoss}
               variant="outline"
@@ -141,7 +142,7 @@ function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className={`text-3xl font-bold ${isProfitable ? 'text-green-500' : 'text-red-500'}`}>
-              ₹{Math.abs(profitOrLoss).toFixed(2)}
+              ₹{Math.abs(netProfitOrLoss).toFixed(2)}
             </div>
           </CardContent>
         </Card>
