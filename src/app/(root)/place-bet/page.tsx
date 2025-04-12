@@ -149,8 +149,8 @@ function PlaceBetPage() {
   };
   
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Place Bet</h1>
+    <div className="container mx-auto py-8 px-6">
+      <h1 className="text-2xl font-bold mb-6">Place Bet</h1>
       
       {showTeamsForm ? (
         <Card className="mb-6">

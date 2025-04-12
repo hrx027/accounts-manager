@@ -139,6 +139,8 @@ function CurrentBetPage() {
     }
     
     try {
+      // Start settling bets
+
       toast.promise(
         settleBet({
           clerkId,
@@ -200,8 +202,8 @@ function CurrentBetPage() {
   }, [accounts]);
   
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Current Matches</h1>
+    <div className="container mx-auto py-8 px-6">
+      <h1 className="text-2xl font-bold mb-6">Current Matches</h1>
       
       {matches.length === 0 ? (
         <Card>
@@ -314,7 +316,7 @@ function CurrentBetPage() {
       )}
       
       <Dialog open={isSettleDialogOpen} onOpenChange={setIsSettleDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle>Settle Bet</DialogTitle>
             <DialogDescription>
@@ -322,7 +324,7 @@ function CurrentBetPage() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="py-4 space-y-6">
+          <div className="py-4 space-y-6 overflow-y-auto pr-2">
             <div className="space-y-4">
               <h4 className="font-medium">Which team won?</h4>
               <RadioGroup 
@@ -408,7 +410,7 @@ function CurrentBetPage() {
             </div>
           </div>
           
-          <DialogFooter>
+          <DialogFooter className="pt-2 border-t mt-2">
             <Button variant="ghost" onClick={() => setIsSettleDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleSubmitSettleBet}>Settle Bet</Button>
           </DialogFooter>

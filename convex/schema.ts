@@ -7,6 +7,10 @@ export default defineSchema({
     email: v.string(),
     image: v.optional(v.string()),
     clerkId: v.string(),
+    totalBalanceSum: v.optional(v.number()), // Current sum of total balance of all accounts (always updated)
+    totalBalanceSumBeforePlacingBet: v.optional(v.number()), // Sum before placing a bet
+    totalBalanceSumAfterSettlingBets: v.optional(v.number()), // Sum after settling bets
+    profitOrLoss: v.optional(v.number()), // Difference between after and before settling
     accounts: v.array(
       v.object({
         id: v.string(),
@@ -27,6 +31,9 @@ export default defineSchema({
             dividedBy: v.number(),
             betAmount: v.number(), // Amount placed for this bet
             timestamp: v.number(), // optional, for sorting/filtering
+            settled: v.optional(v.boolean()), // Whether the bet has been settled
+            winningTeam: v.optional(v.string()), // Name of winning team once settled
+            payout: v.optional(v.number()), // Amount won from the bet (if any)
           })
         ),
       })

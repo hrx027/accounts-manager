@@ -68,8 +68,15 @@ export const addUserAccount = mutation({
         
         const updatedAccounts = [...user.accounts, newAccount];
         
+        // Calculate new total balance sum
+        const totalBalanceSum = updatedAccounts.reduce(
+            (sum, account) => sum + account.totalBalance, 
+            0
+        );
+        
         await ctx.db.patch(user._id, {
             accounts: updatedAccounts,
+            totalBalanceSum
         });
         
         return newAccount;
@@ -113,9 +120,16 @@ export const updateUserAccount = mutation({
         const updatedAccounts = [...user.accounts];
         updatedAccounts[accountIndex] = updatedAccount;
         
-        // Update user with new accounts array
+        // Calculate new total balance sum
+        const totalBalanceSum = updatedAccounts.reduce(
+            (sum, account) => sum + account.totalBalance, 
+            0
+        );
+        
+        // Update user with new accounts array and total balance sum
         await ctx.db.patch(user._id, {
             accounts: updatedAccounts,
+            totalBalanceSum
         });
         
         return updatedAccount;
@@ -145,9 +159,16 @@ export const deleteUserAccount = mutation({
         // Create new accounts array without the deleted account
         const updatedAccounts = user.accounts.filter((account: any) => account.id !== args.accountId);
         
+        // Calculate new total balance sum
+        const totalBalanceSum = updatedAccounts.reduce(
+            (sum, account) => sum + account.totalBalance, 
+            0
+        );
+        
         // Update user with new accounts array
         await ctx.db.patch(user._id, {
             accounts: updatedAccounts,
+            totalBalanceSum
         });
         
         return true;
@@ -177,6 +198,9 @@ export const placeBet = mutation({
         if (!user) {
             throw new Error("User not found");
         }
+        
+        // Calculate total balance sum before placing bets
+        const totalBalanceSum = user.accounts.reduce((sum, account) => sum + account.totalBalance, 0);
         
         const timestamp = Date.now();
         
@@ -226,9 +250,17 @@ export const placeBet = mutation({
             updatedAccounts[accountIndex] = updatedAccount;
         }
         
-        // Update user with new accounts
+        // Calculate new total balance sum after placing bets
+        const updatedTotalBalanceSum = updatedAccounts.reduce(
+            (sum, account) => sum + account.totalBalance, 
+            0
+        );
+        
+        // Update user with new accounts, store both balances
         await ctx.db.patch(user._id, {
             accounts: updatedAccounts,
+            totalBalanceSumBeforePlacingBet: totalBalanceSum,
+            totalBalanceSum: updatedTotalBalanceSum
         });
         
         return true;
@@ -331,13 +363,122 @@ export const settleBet = mutation({
             );
         }
         
-        // Update user with new account balances and filtered bets
+        // Calculate total balance sum after settling bets
+        const totalBalanceSumAfterSettlingBets = updatedAccounts.reduce(
+            (sum, account) => sum + account.totalBalance, 
+            0
+        );
+        
+        // Calculate profit or loss (difference between after settling and before placing)
+        const profitOrLoss = totalBalanceSumAfterSettlingBets - (user.totalBalanceSumBeforePlacingBet || 0);
+        
+        // Update user with new account balances, filtered bets, and profit/loss data
         await ctx.db.patch(user._id, {
             accounts: updatedAccounts,
+            totalBalanceSum: totalBalanceSumAfterSettlingBets,
+            totalBalanceSumAfterSettlingBets,
+            profitOrLoss
         });
         
         return {
-            settledBetsCount
+            settledBetsCount,
+            profitOrLoss
         };
+    }
+});
+
+export const updateAccountBalance = mutation({
+    args: {
+        clerkId: v.string(),
+        accountId: v.string(),
+        amount: v.number(),
+        type: v.union(v.literal("deposit"), v.literal("withdrawal")),
+    },
+    handler: async (ctx, args) => {
+        const user = await ctx.db.query("users")
+            .filter(q => q.eq(q.field("clerkId"), args.clerkId))
+            .first();
+        
+        if (!user) {
+            throw new Error("User not found");
+        }
+        
+        const accountIndex = user.accounts.findIndex((account: any) => account.id === args.accountId);
+        
+        if (accountIndex === -1) {
+            throw new Error("Account not found");
+        }
+        
+        // Create updated account
+        const updatedAccount = {
+            ...user.accounts[accountIndex],
+            totalBalance: args.type === "deposit" 
+                ? user.accounts[accountIndex].totalBalance + args.amount
+                : user.accounts[accountIndex].totalBalance - args.amount,
+        };
+        
+        // Validate withdrawal
+        if (args.type === "withdrawal" && updatedAccount.totalBalance < 0) {
+            throw new Error("Insufficient balance for withdrawal");
+        }
+        
+        // Create new accounts array with the updated account
+        const updatedAccounts = [...user.accounts];
+        updatedAccounts[accountIndex] = updatedAccount;
+        
+        // Calculate new total balance sum
+        const totalBalanceSum = updatedAccounts.reduce(
+            (sum, account) => sum + account.totalBalance, 
+            0
+        );
+        
+        // Update user with new accounts array and total balance sum
+        await ctx.db.patch(user._id, {
+            accounts: updatedAccounts,
+            totalBalanceSum
+        });
+        
+        return updatedAccount;
+    }
+});
+
+export const getUser = query({
+    args: {
+        clerkId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const user = await ctx.db.query("users")
+            .filter(q => q.eq(q.field("clerkId"), args.clerkId))
+            .first();
+        
+        if (!user) {
+            return null;
+        }
+        
+        return user;
+    }
+});
+
+export const resetProfitLoss = mutation({
+    args: {
+        clerkId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const user = await ctx.db.query("users")
+            .filter(q => q.eq(q.field("clerkId"), args.clerkId))
+            .first();
+        
+        if (!user) {
+            throw new Error("User not found");
+        }
+        
+        // Reset profit/loss and balance sums to zero
+        await ctx.db.patch(user._id, {
+            profitOrLoss: 0,
+            totalBalanceSumBeforePlacingBet: 0,
+            totalBalanceSumAfterSettlingBets: 0
+        });
+        
+        return true;
     }
 });
