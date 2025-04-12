@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { UserButton } from "@clerk/nextjs";
 import { useState } from "react";
+import Link from "next/link";
 
 type Account = {
   id: string;
@@ -148,79 +149,90 @@ function DashboardPage() {
         </Card>
       </div>
 
-      {/* Accounts table */}
+      {/* Accounts table or No Accounts Message */}
       <Card>
         <CardHeader>
           <CardTitle>Accounts</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead className="text-right">Balance</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {accounts.map((account: Account) => (
-                <TableRow key={account.id}>
-                  <TableCell>{account.email}</TableCell>
-                  <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
-                  <TableCell>
-                    <div className="flex justify-end gap-2">
-                      {activeAccount === account.id && activeAction ? (
-                        <>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={actionAmount || ""}
-                            onChange={(e) => setActionAmount(parseFloat(e.target.value) || 0)}
-                            placeholder="Amount"
-                            className="w-32"
-                          />
-                          <Button 
-                            size="sm"
-                            variant={activeAction === "deposit" ? "default" : "outline"}
-                            onClick={handleActionSubmit}
-                          >
-                            {activeAction === "deposit" ? "Deposit" : "Withdraw"}
-                          </Button>
-                          <Button 
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                              setActiveAccount(null);
-                              setActiveAction(null);
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button 
-                            size="sm"
-                            onClick={() => handleActionClick(account.id, "deposit")}
-                          >
-                            Deposit
-                          </Button>
-                          <Button 
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleActionClick(account.id, "withdrawal")}
-                          >
-                            Withdraw
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
+          {accounts.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Email</TableHead>
+                  <TableHead className="text-right">Balance</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {accounts.map((account: Account) => (
+                  <TableRow key={account.id}>
+                    <TableCell>{account.email}</TableCell>
+                    <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        {activeAccount === account.id && activeAction ? (
+                          <>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={actionAmount || ""}
+                              onChange={(e) => setActionAmount(parseFloat(e.target.value) || 0)}
+                              placeholder="Amount"
+                              className="w-32"
+                            />
+                            <Button 
+                              size="sm"
+                              variant={activeAction === "deposit" ? "default" : "outline"}
+                              onClick={handleActionSubmit}
+                            >
+                              {activeAction === "deposit" ? "Deposit" : "Withdraw"}
+                            </Button>
+                            <Button 
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                setActiveAccount(null);
+                                setActiveAction(null);
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button 
+                              size="sm"
+                              onClick={() => handleActionClick(account.id, "deposit")}
+                            >
+                              Deposit
+                            </Button>
+                            <Button 
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleActionClick(account.id, "withdrawal")}
+                            >
+                              Withdraw
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8">
+              <p className="text-center text-muted-foreground mb-4">
+                You don't have any accounts yet. Add an account to get started.
+              </p>
+              <Link href="/account-details">
+                <Button>Go to Accounts</Button>
+              </Link>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
