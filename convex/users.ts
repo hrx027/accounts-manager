@@ -351,8 +351,46 @@ export const settleBet = mutation({
                 
                 // Update account balance
                 if (winAmount > 0) {
+                    const balanceBeforeBet = updatedAccounts[i].totalBalance;
                     updatedAccounts[i].totalBalance += winAmount;
+                    const balanceAfterBet = updatedAccounts[i].totalBalance;
                     settledBetsCount++;
+                    
+                    // Save settled bet to bet history table
+                    await ctx.db.insert("betHistory", {
+                        userId: user._id,
+                        clerkId: user.clerkId,
+                        accountId: account.id,
+                        accountEmail: account.email,
+                        team1: bet.team1,
+                        team2: bet.team2,
+                        dividedBy: bet.dividedBy,
+                        betAmount: bet.betAmount,
+                        timestamp: Date.now(),
+                        winningTeam: args.winningTeam,
+                        payout: winAmount,
+                        profit: winAmount - bet.betAmount,
+                        balanceBeforeBet,
+                        balanceAfterBet
+                    });
+                } else {
+                    // Even if user lost, save the bet to history
+                    await ctx.db.insert("betHistory", {
+                        userId: user._id,
+                        clerkId: user.clerkId,
+                        accountId: account.id,
+                        accountEmail: account.email,
+                        team1: bet.team1,
+                        team2: bet.team2,
+                        dividedBy: bet.dividedBy,
+                        betAmount: bet.betAmount,
+                        timestamp: Date.now(),
+                        winningTeam: args.winningTeam,
+                        payout: 0,
+                        profit: -bet.betAmount,
+                        balanceBeforeBet: updatedAccounts[i].totalBalance,
+                        balanceAfterBet: updatedAccounts[i].totalBalance
+                    });
                 }
             }
             
@@ -485,5 +523,58 @@ export const resetProfitLoss = mutation({
         });
         
         return true;
+    }
+});
+
+// New query to get bet history for a user
+export const getBetHistory = query({
+    args: {
+        clerkId: v.string(),
+        limit: v.optional(v.number()),
+        cursor: v.optional(v.id("betHistory")),
+    },
+    handler: async (ctx, args) => {
+        const limit = args.limit ?? 10;
+        
+        // Get the user's bet history, newest first
+        const betHistory = await ctx.db
+            .query("betHistory")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+            .order("desc")
+            .take(limit);
+        
+        return betHistory;
+    }
+});
+
+// Add a new mutation to clear bet history
+export const clearBetHistory = mutation({
+    args: {
+        clerkId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const user = await ctx.db.query("users")
+            .filter(q => q.eq(q.field("clerkId"), args.clerkId))
+            .first();
+        
+        if (!user) {
+            throw new Error("User not found");
+        }
+        
+        // Find all bet history records for this user
+        const betHistoryRecords = await ctx.db
+            .query("betHistory")
+            .withIndex("by_clerk_id", q => q.eq("clerkId", args.clerkId))
+            .collect();
+        
+        // Delete each record
+        for (const record of betHistoryRecords) {
+            await ctx.db.delete(record._id);
+        }
+        
+        return { 
+            success: true,
+            deletedCount: betHistoryRecords.length
+        };
     }
 });

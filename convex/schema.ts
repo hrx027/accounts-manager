@@ -40,4 +40,28 @@ export default defineSchema({
       })
     ),
   }).index("by_clerk_id", ["clerkId"]),
+  
+  // New table for storing bet history
+  betHistory: defineTable({
+    userId: v.string(), // Reference to the user who placed the bet
+    clerkId: v.string(), // Clerk ID for easy querying
+    accountId: v.string(), // ID of the account used to place the bet
+    accountEmail: v.string(), // Email of the account
+    team1: v.object({
+      name: v.string(),
+      odds: v.number(),
+    }),
+    team2: v.object({
+      name: v.string(),
+      odds: v.number(),
+    }),
+    dividedBy: v.number(),
+    betAmount: v.number(), // Amount placed for this bet
+    timestamp: v.number(), // For sorting/filtering
+    winningTeam: v.string(), // Name of winning team
+    payout: v.number(), // Amount won from the bet
+    profit: v.number(), // Net profit from the bet (payout - betAmount)
+    balanceBeforeBet: v.number(), // Account balance before the bet
+    balanceAfterBet: v.number(), // Account balance after the bet
+  }).index("by_clerk_id", ["clerkId"]).index("by_timestamp", ["timestamp"]),
 });

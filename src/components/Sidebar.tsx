@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LuLayoutDashboard, LuBed, LuHistory, LuUser } from "react-icons/lu";
+import { LuLayoutDashboard, LuHistory, LuUser, LuClipboard, LuDollarSign } from "react-icons/lu";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -13,12 +13,12 @@ export function Sidebar() {
       href: "/dashboard",
     },
     {
-      icon: LuBed,
+      icon: LuDollarSign,
       label: "Place Bet",
       href: "/place-bet",
     },
     {
-      icon: LuHistory, 
+      icon: LuClipboard, 
       label: "Current Bets",
       href: "/current-bets",
     },
@@ -27,6 +27,11 @@ export function Sidebar() {
       label: "Account Details",
       href: "/account-details",
     },
+    {
+        icon:LuHistory,
+        label:"Bet History",
+        href:"/bet-history"
+    }
   ];
 
   return (
