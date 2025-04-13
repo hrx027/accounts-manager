@@ -42,8 +42,8 @@ import { Edit2, Save, Trash2, X } from "lucide-react";
 type Account = {
   id: string;
   email: string;
-  pno: string;
-  adhaarid: string;
+  pno?: string;
+  adhaarid?: string;
   username?: string;
   deviceLocation?: string;
   totalBalance: number;
@@ -251,7 +251,6 @@ function AccountDetailsPage() {
                   value={newAccount.pno}
                   onChange={handleInputChange}
                   placeholder="e.g. 9999999999" 
-                  required
                 />
               </div>
               
@@ -263,7 +262,6 @@ function AccountDetailsPage() {
                   value={newAccount.adhaarid}
                   onChange={handleInputChange}
                   placeholder="Adhaar ID" 
-                  required
                 />
               </div>
               
@@ -322,12 +320,12 @@ function AccountDetailsPage() {
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead>Email</TableHead>
-                <TableHead>Phone Number</TableHead>
-                <TableHead className="hidden sm:table-cell">Adhaar ID</TableHead>
                 <TableHead className="hidden md:table-cell">Username</TableHead>
                 <TableHead className="hidden lg:table-cell">Device/Location</TableHead>
+                <TableHead className="hidden sm:table-cell">Adhaar ID</TableHead>
+                <TableHead>Phone Number</TableHead>
                 <TableHead className="text-right">Balance</TableHead>
-                <TableHead className="w-[100px] sm:w-[120px]">Actions</TableHead>
+                <TableHead className="w-[100px] sm:w-[120px] text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -343,22 +341,6 @@ function AccountDetailsPage() {
                           className="max-w-[150px] sm:max-w-[200px]"
                         />
                       </TableCell>
-                      <TableCell>
-                        <Input
-                          name="pno"
-                          value={editFormData?.pno || ''}
-                          onChange={handleEditInputChange}
-                          className="max-w-[120px] sm:max-w-[150px]"
-                        />
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Input
-                          name="adhaarid"
-                          value={editFormData?.adhaarid || ''}
-                          onChange={handleEditInputChange}
-                          className="max-w-[120px] sm:max-w-[150px]"
-                        />
-                      </TableCell>
                       <TableCell className="hidden md:table-cell">
                         <Input
                           name="username"
@@ -371,6 +353,22 @@ function AccountDetailsPage() {
                         <Input
                           name="deviceLocation"
                           value={editFormData?.deviceLocation || ''}
+                          onChange={handleEditInputChange}
+                          className="max-w-[120px] sm:max-w-[150px]"
+                        />
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <Input
+                          name="adhaarid"
+                          value={editFormData?.adhaarid || ''}
+                          onChange={handleEditInputChange}
+                          className="max-w-[120px] sm:max-w-[150px]"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          name="pno"
+                          value={editFormData?.pno || ''}
                           onChange={handleEditInputChange}
                           className="max-w-[120px] sm:max-w-[150px]"
                         />
@@ -408,10 +406,10 @@ function AccountDetailsPage() {
                   ) : (
                     <>
                       <TableCell className="max-w-[120px] truncate">{account.email}</TableCell>
-                      <TableCell>{account.pno}</TableCell>
-                      <TableCell className="hidden sm:table-cell">{account.adhaarid}</TableCell>
                       <TableCell className="hidden md:table-cell">{account.username || '-'}</TableCell>
                       <TableCell className="hidden lg:table-cell">{account.deviceLocation || '-'}</TableCell>
+                      <TableCell className="hidden sm:table-cell">{account.adhaarid || '-'}</TableCell>
+                      <TableCell>{account.pno || '-'}</TableCell>
                       <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
                       <TableCell>
                         <div className="flex space-x-1 sm:space-x-2">

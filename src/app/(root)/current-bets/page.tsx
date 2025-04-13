@@ -46,8 +46,10 @@ type Bet = {
 type Account = {
   id: string;
   email: string;
-  pno: string;
-  adhaarid: string;
+  pno?: string;
+  adhaarid?: string;
+  username?: string;
+  deviceLocation?: string;
   totalBalance: number;
   bets: Bet[];
 };

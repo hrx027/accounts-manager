@@ -22,8 +22,10 @@ import Link from "next/link";
 type Account = {
   id: string;
   email: string;
-  pno: string;
-  adhaarid: string;
+  pno?: string;
+  adhaarid?: string;
+  username?: string;
+  deviceLocation?: string;
   totalBalance: number;
   bets: any[];
 };

@@ -16,8 +16,8 @@ export default defineSchema({
       v.object({
         id: v.string(),
         email: v.string(),
-        pno: v.string(),
-        adhaarid: v.string(),
+        pno: v.optional(v.string()), // Optional phone number
+        adhaarid: v.optional(v.string()), // Optional Adhaar ID
         username: v.optional(v.string()), // Optional username
         deviceLocation: v.optional(v.string()), // Optional device/location field
         totalBalance: v.number(),
