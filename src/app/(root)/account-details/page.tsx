@@ -279,7 +279,7 @@ function AccountDetailsPage() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="deviceLocation">Device Location</Label>
+                <Label htmlFor="deviceLocation">Device/Location</Label>
                 <Input 
                   id="deviceLocation" 
                   name="deviceLocation" 
