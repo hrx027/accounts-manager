@@ -1,6 +1,7 @@
 import { type Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import ConvexClerkProvider from '@/components/providers/ConvexClerkProvider'
 import { Toaster } from '@/components/ui/sonner'
 const geistSans = Geist({
@@ -49,15 +50,22 @@ export default function RootLayout({
 }>) {
   return (
     <ConvexClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
           <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
           <link rel="apple-touch-icon" href="/apple-icon.svg" type="image/svg+xml" />
         </head>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          {children}
-          <Toaster />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
         </body>
       </html>
     </ConvexClerkProvider>

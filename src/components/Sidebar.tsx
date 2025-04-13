@@ -72,8 +72,8 @@ export function Sidebar() {
             onClick={() => setIsOpen(false)}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
               isActive 
-                ? "bg-primary/10 text-primary"
-                : "hover:bg-muted"
+                ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                : "hover:bg-gray-100 dark:hover:bg-gray-800 text-black dark:text-white"
             }`}
           >
             <item.icon className="w-5 h-5 shrink-0" />
@@ -84,35 +84,42 @@ export function Sidebar() {
     </nav>
   );
 
+  const renderLogo = () => (
+    <div className="flex items-center gap-2">
+      <div className="w-8 h-8 bg-black dark:bg-emerald-600 rounded-lg flex items-center justify-center">
+        <span className="text-lg font-bold text-white dark:text-black">S</span>
+      </div>
+      <h2 className="text-xl font-bold text-black dark:text-white">Stake Manager</h2>
+    </div>
+  );
+
   // For mobile view, render a slide-out drawer
   if (isMobileView) {
     return (
-      <div className="sm:hidden fixed top-0 left-0 right-0 z-50 bg-background border-b py-2 px-4">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 py-2 px-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-lg font-bold text-primary-foreground">S</span>
-            </div>
-            <h2 className="text-xl font-bold tracking-tight">Stake Manager</h2>
-          </div>
-          
+          {renderLogo()}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <LuMenu className="h-5 w-5" />
+              <Button variant="outline" size="icon" className="border-gray-200 dark:border-gray-800">
+                <LuMenu className="h-5 w-5 text-black dark:text-white" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 sm:max-w-sm">
-              <div className="px-2 py-6">
-                <div className="flex items-center gap-2 mb-8">
-                  <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                    <span className="text-lg font-bold text-primary-foreground">S</span>
-                  </div>
-                  <h2 className="text-2xl font-bold tracking-tight">Stake Manager</h2>
-                </div>
-                {renderNavLinks()}
+            <SheetContent side="left" className="w-[240px] sm:w-[300px] bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800 z-50">
+              <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
+                {renderLogo()}
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => setIsOpen(false)}
+                  className="border-gray-200 dark:border-gray-800"
+                >
+                  <LuX className="h-5 w-5 text-black dark:text-white" />
+                  <span className="sr-only">Close menu</span>
+                </Button>
               </div>
+              <div className="py-4">{renderNavLinks()}</div>
             </SheetContent>
           </Sheet>
         </div>
@@ -120,20 +127,16 @@ export function Sidebar() {
     );
   }
 
-  // For desktop view, render the sidebar
+  // For desktop view, render a static sidebar
   return (
-    <div className="hidden md:flex w-64 h-screen bg-background border-r flex-col">
-      <div className="p-6 border-b">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-lg font-bold text-primary-foreground">S</span>
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight">Stake Manager</h2>
+    <div className="hidden md:flex md:w-60 md:flex-col md:fixed md:inset-y-0 md:z-30 bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800">
+      <div className="flex-1 flex flex-col min-h-0 pt-5">
+        <div className="flex items-center justify-center px-4 mb-6">
+          {renderLogo()}
         </div>
-      </div>
-      
-      <div className="flex-1 px-4 mt-4">
-        {renderNavLinks()}
+        <div className="flex-1 flex flex-col px-3">
+          {renderNavLinks()}
+        </div>
       </div>
     </div>
   );
