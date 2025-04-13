@@ -149,7 +149,7 @@ function PlaceBetPage() {
   };
   
   return (
-    <div className="container mx-auto py-8 px-6">
+    <div className="container mx-auto py-8 px-4 sm:px-6">
       <h1 className="text-2xl font-bold mb-6">Place Bet</h1>
       
       {showTeamsForm ? (
@@ -252,7 +252,7 @@ function PlaceBetPage() {
               <CardTitle>Match Summary</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Team 1</p>
                   <p className="font-medium">{team1.name} ({team1.odds})</p>
@@ -261,7 +261,7 @@ function PlaceBetPage() {
                   <p className="text-sm text-muted-foreground">Team 2</p>
                   <p className="font-medium">{team2.name} ({team2.odds})</p>
                 </div>
-        <div>
+                <div>
                   <p className="text-sm text-muted-foreground">Bet Details</p>
                   <p className="font-medium">Amount: ₹{dividedBy}</p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -287,20 +287,20 @@ function PlaceBetPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="rounded-lg border overflow-hidden">
+            <div className="rounded-lg border overflow-hidden overflow-x-auto">
               <Table>
                 <TableHeader className="bg-muted/50">
                   <TableRow>
                     <TableHead>Email</TableHead>
                     <TableHead className="text-right">Balance</TableHead>
-                    <TableHead className="w-[120px] text-center">{team1.name}</TableHead>
-                    <TableHead className="w-[120px] text-center">{team2.name}</TableHead>
+                    <TableHead className="w-[80px] sm:w-[120px] text-center">{team1.name}</TableHead>
+                    <TableHead className="w-[80px] sm:w-[120px] text-center">{team2.name}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {accounts.map((account: Account) => (
                     <TableRow key={account.id} className="hover:bg-muted/20">
-                      <TableCell>{account.email}</TableCell>
+                      <TableCell className="max-w-[150px] truncate">{account.email}</TableCell>
                       <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
                       <TableCell className="text-center">
                         <Checkbox
@@ -330,7 +330,7 @@ function PlaceBetPage() {
           </div>
         </>
       )}
-        </div>
+    </div>
   );
 }
 

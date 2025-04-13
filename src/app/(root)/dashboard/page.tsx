@@ -109,15 +109,15 @@ function DashboardPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       {/* Header with UserButton */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <UserButton afterSignOutUrl="/" />
       </div>
 
       {/* Financial cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8">
         {/* Total balance card */}
         <Card className="shadow-md hover:shadow-lg transition-shadow">
           <CardHeader className="pb-2">
@@ -156,73 +156,75 @@ function DashboardPage() {
         </CardHeader>
         <CardContent>
           {accounts.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead className="text-right">Balance</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {accounts.map((account: Account) => (
-                  <TableRow key={account.id}>
-                    <TableCell>{account.email}</TableCell>
-                    <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
-                    <TableCell>
-                      <div className="flex justify-end gap-2">
-                        {activeAccount === account.id && activeAction ? (
-                          <>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={actionAmount || ""}
-                              onChange={(e) => setActionAmount(parseFloat(e.target.value) || 0)}
-                              placeholder="Amount"
-                              className="w-32"
-                            />
-                            <Button 
-                              size="sm"
-                              variant={activeAction === "deposit" ? "default" : "outline"}
-                              onClick={handleActionSubmit}
-                            >
-                              {activeAction === "deposit" ? "Deposit" : "Withdraw"}
-                            </Button>
-                            <Button 
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => {
-                                setActiveAccount(null);
-                                setActiveAction(null);
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button 
-                              size="sm"
-                              onClick={() => handleActionClick(account.id, "deposit")}
-                            >
-                              Deposit
-                            </Button>
-                            <Button 
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleActionClick(account.id, "withdrawal")}
-                            >
-                              Withdraw
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Email</TableHead>
+                    <TableHead className="text-right">Balance</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {accounts.map((account: Account) => (
+                    <TableRow key={account.id}>
+                      <TableCell className="max-w-[150px] truncate">{account.email}</TableCell>
+                      <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-1 sm:gap-2 flex-wrap">
+                          {activeAccount === account.id && activeAction ? (
+                            <>
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={actionAmount || ""}
+                                onChange={(e) => setActionAmount(parseFloat(e.target.value) || 0)}
+                                placeholder="Amount"
+                                className="w-20 sm:w-32"
+                              />
+                              <Button 
+                                size="sm"
+                                variant={activeAction === "deposit" ? "default" : "outline"}
+                                onClick={handleActionSubmit}
+                              >
+                                {activeAction === "deposit" ? "Deposit" : "Withdraw"}
+                              </Button>
+                              <Button 
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  setActiveAccount(null);
+                                  setActiveAction(null);
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button 
+                                size="sm"
+                                onClick={() => handleActionClick(account.id, "deposit")}
+                              >
+                                Deposit
+                              </Button>
+                              <Button 
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleActionClick(account.id, "withdrawal")}
+                              >
+                                Withdraw
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8">
               <p className="text-center text-muted-foreground mb-4">

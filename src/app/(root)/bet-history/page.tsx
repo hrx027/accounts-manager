@@ -95,8 +95,8 @@ function BetHistoryPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="container mx-auto py-8 px-4 sm:px-6">
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <h1 className="text-2xl font-bold">Bet History</h1>
 
         {betHistory && betHistory.length > 0 && (
@@ -121,18 +121,18 @@ function BetHistoryPage() {
           </CardHeader>
         </Card>
       ) : (
-        <div className="rounded-lg border overflow-hidden">
+        <div className="rounded-lg border overflow-hidden overflow-x-auto">
           <Table>
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead>Match</TableHead>
-                <TableHead>Account</TableHead>
+                <TableHead className="hidden md:table-cell">Account</TableHead>
                 <TableHead>Bet Amount</TableHead>
-                <TableHead>Odds</TableHead>
+                <TableHead className="hidden sm:table-cell">Odds</TableHead>
                 <TableHead>Result</TableHead>
-                <TableHead>Payout</TableHead>
+                <TableHead className="hidden sm:table-cell">Payout</TableHead>
                 <TableHead className="text-right">Profit/Loss</TableHead>
-                <TableHead>Time</TableHead>
+                <TableHead className="hidden md:table-cell">Time</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -146,12 +146,20 @@ function BetHistoryPage() {
                 
                 return (
                   <TableRow key={bet._id} className="hover:bg-muted/20">
-                    <TableCell className="font-medium">
-                      {bet.team1.name} vs {bet.team2.name}
+                    <TableCell className="font-medium max-w-[150px] truncate">
+                      <div className="flex flex-col">
+                        <span>{bet.team1.name} vs {bet.team2.name}</span>
+                        <span className="block md:hidden text-xs text-muted-foreground mt-1 truncate">
+                          {bet.accountEmail}
+                        </span>
+                        <span className="block sm:hidden text-xs text-muted-foreground mt-1">
+                          {selectedTeam ? `${selectedTeam.name}: ${selectedTeam.odds}` : "-"}
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell>{bet.accountEmail}</TableCell>
+                    <TableCell className="hidden md:table-cell">{bet.accountEmail}</TableCell>
                     <TableCell>₹{bet.betAmount.toLocaleString()}</TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       {selectedTeam ? (
                         <div>
                           {selectedTeam.name}: {selectedTeam.odds}
@@ -165,13 +173,13 @@ function BetHistoryPage() {
                         <Badge className="bg-red-400 hover:bg-rose-300 text-black">LOST</Badge>
                       )}
                     </TableCell>
-                    <TableCell>₹{bet.payout.toLocaleString()}</TableCell>
+                    <TableCell className="hidden sm:table-cell">₹{bet.payout.toLocaleString()}</TableCell>
                     <TableCell className="text-right font-medium">
                       <span className={`${isWin ? 'text-green-500' : 'text-red-500'} px-2 py-1 rounded ${isWin ? 'bg-green-50' : 'bg-red-50'}`}>
                         {isWin ? '+' : ''}₹{bet.profit.toLocaleString()}
                       </span>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-muted-foreground hidden md:table-cell">
                       {new Date(bet.timestamp).toLocaleString()}
                     </TableCell>
                   </TableRow>
@@ -184,7 +192,7 @@ function BetHistoryPage() {
 
       {/* Confirmation dialog for clearing history */}
       <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-[calc(100%-2rem)] sm:max-w-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>Clear Betting History?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -192,7 +200,7 @@ function BetHistoryPage() {
               Your account balances and current bets will not be affected.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleClearHistory}

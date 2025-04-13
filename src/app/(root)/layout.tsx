@@ -9,7 +9,7 @@ export default function RootLayout({
     <div className="h-screen flex flex-col">
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto flex flex-col">
+        <main className="flex-1 overflow-y-auto flex flex-col md:pt-0 pt-14">
           <div className="flex-1">
             {children}
           </div>

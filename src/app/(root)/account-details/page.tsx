@@ -201,8 +201,8 @@ function AccountDetailsPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="container mx-auto py-8 px-4 sm:px-6">
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <h1 className="text-2xl font-bold">Account Details</h1>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -211,7 +211,7 @@ function AccountDetailsPage() {
               Add Account
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)]">
             <DialogHeader>
               <DialogTitle>Add New Account</DialogTitle>
               <DialogDescription>
@@ -285,16 +285,16 @@ function AccountDetailsPage() {
           </CardHeader>
         </Card>
       ) : (
-        <div className="rounded-lg border overflow-hidden">
+        <div className="rounded-lg border overflow-hidden overflow-x-auto">
           <Table>
 
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead>Email</TableHead>
                 <TableHead>Phone Number</TableHead>
-                <TableHead>Adhaar ID</TableHead>
+                <TableHead className="hidden sm:table-cell">Adhaar ID</TableHead>
                 <TableHead className="text-right">Balance</TableHead>
-                <TableHead className="w-[120px]">Actions</TableHead>
+                <TableHead className="w-[100px] sm:w-[120px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -307,7 +307,7 @@ function AccountDetailsPage() {
                           name="email"
                           value={editFormData?.email || ''}
                           onChange={handleEditInputChange}
-                          className="max-w-[200px]"
+                          className="max-w-[150px] sm:max-w-[200px]"
                         />
                       </TableCell>
                       <TableCell>
@@ -315,15 +315,15 @@ function AccountDetailsPage() {
                           name="pno"
                           value={editFormData?.pno || ''}
                           onChange={handleEditInputChange}
-                          className="max-w-[150px]"
+                          className="max-w-[120px] sm:max-w-[150px]"
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell">
                         <Input
                           name="adhaarid"
                           value={editFormData?.adhaarid || ''}
                           onChange={handleEditInputChange}
-                          className="max-w-[150px]"
+                          className="max-w-[120px] sm:max-w-[150px]"
                         />
                       </TableCell>
                       <TableCell className="text-right">
@@ -334,11 +334,11 @@ function AccountDetailsPage() {
                           step="0.01"
                           value={editFormData?.totalBalance || 0}
                           onChange={handleEditInputChange}
-                          className="max-w-[100px] ml-auto text-right"
+                          className="max-w-[80px] sm:max-w-[100px] ml-auto text-right"
                         />
                       </TableCell>
                       <TableCell>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-1 sm:space-x-2">
                           <Button 
                             size="sm" 
                             variant="ghost"
@@ -358,12 +358,12 @@ function AccountDetailsPage() {
                     </>
                   ) : (
                     <>
-                      <TableCell>{account.email}</TableCell>
+                      <TableCell className="max-w-[120px] truncate">{account.email}</TableCell>
                       <TableCell>{account.pno}</TableCell>
-                      <TableCell>{account.adhaarid}</TableCell>
+                      <TableCell className="hidden sm:table-cell">{account.adhaarid}</TableCell>
                       <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
                       <TableCell>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-1 sm:space-x-2">
                           <Button 
                             size="sm" 
                             variant="ghost"
@@ -391,7 +391,7 @@ function AccountDetailsPage() {
       )}
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-[calc(100%-2rem)] sm:max-w-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -399,7 +399,7 @@ function AccountDetailsPage() {
               and all its associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <AlertDialogCancel onClick={() => setAccountToDelete(null)}>Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleConfirmDelete}

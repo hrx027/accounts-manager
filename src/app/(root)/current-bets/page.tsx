@@ -202,7 +202,7 @@ function CurrentBetPage() {
   }, [accounts]);
   
   return (
-    <div className="container mx-auto py-8 px-6">
+    <div className="container mx-auto py-8 px-4 sm:px-6">
       <h1 className="text-2xl font-bold mb-6">Current Matches</h1>
       
       {matches.length === 0 ? (
@@ -223,9 +223,9 @@ function CurrentBetPage() {
             
             return (
               <Card key={matchId} className="overflow-hidden">
-                <div className="flex items-center justify-between p-4 py-3">
+                <div className="flex items-center justify-between p-4 py-3 flex-wrap gap-2">
                   <div 
-                    className="flex-1 cursor-pointer hover:bg-muted/20"
+                    className="flex-1 cursor-pointer hover:bg-muted/20 min-w-[200px]"
                     onClick={() => toggleMatch(matchId)}
                   >
                     <h3 className="text-lg font-medium flex items-center gap-2">
@@ -243,7 +243,7 @@ function CurrentBetPage() {
                       className="flex items-center gap-1"
                       onClick={() => handleSettleBet(matchId, match.team1, match.team2)}
                     >
-                      <Award className="h-4 w-4" /> Settle Bet
+                      <Award className="h-4 w-4" /> <span className="hidden sm:inline">Settle Bet</span>
                     </Button>
                     <Button variant="ghost" size="sm" onClick={() => toggleMatch(matchId)}>
                       {expandedMatch === matchId ? <ChevronUp /> : <ChevronDown />}
@@ -260,29 +260,32 @@ function CurrentBetPage() {
                         return (
                           <Card key={betIndex} className="relative">
                             <div className="absolute top-3 right-3">
-                              <Badge variant="outline">{formatDate(item.bet.timestamp)}</Badge>
+                              <Badge variant="outline" className="hidden sm:inline-flex">{formatDate(item.bet.timestamp)}</Badge>
                             </div>
                             <CardHeader className="pb-2">
-                              <CardTitle className="text-base flex items-center gap-2">
+                              <CardTitle className="text-base flex items-center gap-2 pr-4">
                                 Account: {item.account.email}
                               </CardTitle>
                               <CardDescription>
                                 Balance: ₹{item.account.totalBalance.toFixed(2)}
+                                <span className="block sm:hidden text-xs mt-1">
+                                  {formatDate(item.bet.timestamp)}
+                                </span>
                               </CardDescription>
                             </CardHeader>
                             <CardContent>
                               <div className="grid gap-4">
                                 <div className="grid grid-cols-2 gap-4">
                                   <div className={`p-3 rounded-lg border ${selectedTeam === item.bet.team1 ? 'bg-primary/10 border-primary' : 'border-muted'}`}>
-                                    <p className="font-medium">{item.bet.team1.name}</p>
-                                    <p className="text-sm text-muted-foreground">Odds: {item.bet.team1.odds}</p>
+                                    <p className="font-medium text-sm sm:text-base">{item.bet.team1.name}</p>
+                                    <p className="text-xs sm:text-sm text-muted-foreground">Odds: {item.bet.team1.odds}</p>
                                     {selectedTeam === item.bet.team1 && (
                                       <Badge className="mt-2">Selected</Badge>
                                     )}
                                   </div>
                                   <div className={`p-3 rounded-lg border ${selectedTeam === item.bet.team2 ? 'bg-primary/10 border-primary' : 'border-muted'}`}>
-                                    <p className="font-medium">{item.bet.team2.name}</p>
-                                    <p className="text-sm text-muted-foreground">Odds: {item.bet.team2.odds}</p>
+                                    <p className="font-medium text-sm sm:text-base">{item.bet.team2.name}</p>
+                                    <p className="text-xs sm:text-sm text-muted-foreground">Odds: {item.bet.team2.odds}</p>
                                     {selectedTeam === item.bet.team2 && (
                                       <Badge className="mt-2">Selected</Badge>
                                     )}
@@ -316,7 +319,7 @@ function CurrentBetPage() {
       )}
       
       <Dialog open={isSettleDialogOpen} onOpenChange={setIsSettleDialogOpen}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col max-w-[calc(100%-2rem)]">
           <DialogHeader>
             <DialogTitle>Settle Bet</DialogTitle>
             <DialogDescription>
@@ -369,9 +372,9 @@ function CurrentBetPage() {
                     
                     return (
                       <div key={index} className="border p-3 rounded-md">
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
                           <div>
-                            <p className="font-medium">{item.account.email}</p>
+                            <p className="font-medium text-sm truncate max-w-[200px]">{item.account.email}</p>
                             <p className="text-sm text-muted-foreground">Bet Amount: ₹{item.bet.betAmount.toFixed(2)}</p>
                           </div>
                           <Checkbox 
@@ -410,7 +413,7 @@ function CurrentBetPage() {
             </div>
           </div>
           
-          <DialogFooter className="pt-2 border-t mt-2">
+          <DialogFooter className="pt-2 border-t mt-2 flex-col sm:flex-row gap-2 sm:gap-0">
             <Button variant="ghost" onClick={() => setIsSettleDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleSubmitSettleBet}>Settle Bet</Button>
           </DialogFooter>
