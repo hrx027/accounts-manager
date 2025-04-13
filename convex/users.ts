@@ -46,6 +46,8 @@ export const addUserAccount = mutation({
         email: v.string(),
         pno: v.string(),
         adhaarid: v.string(),
+        username: v.optional(v.string()),
+        deviceLocation: v.optional(v.string()),
         totalBalance: v.number(),
     },
     handler: async (ctx, args) => {
@@ -62,6 +64,8 @@ export const addUserAccount = mutation({
             email: args.email,
             pno: args.pno,
             adhaarid: args.adhaarid,
+            username: args.username,
+            deviceLocation: args.deviceLocation,
             totalBalance: args.totalBalance,
             bets: [],
         };
@@ -90,6 +94,8 @@ export const updateUserAccount = mutation({
         email: v.string(),
         pno: v.string(),
         adhaarid: v.string(),
+        username: v.optional(v.string()),
+        deviceLocation: v.optional(v.string()),
         totalBalance: v.number(),
     },
     handler: async (ctx, args) => {
@@ -113,6 +119,8 @@ export const updateUserAccount = mutation({
             email: args.email,
             pno: args.pno,
             adhaarid: args.adhaarid,
+            username: args.username,
+            deviceLocation: args.deviceLocation,
             totalBalance: args.totalBalance,
         };
         

@@ -18,6 +18,8 @@ export default defineSchema({
         email: v.string(),
         pno: v.string(),
         adhaarid: v.string(),
+        username: v.optional(v.string()), // Optional username
+        deviceLocation: v.optional(v.string()), // Optional device/location field
         totalBalance: v.number(),
         bets: v.array(
           v.object({

@@ -44,6 +44,8 @@ type Account = {
   email: string;
   pno: string;
   adhaarid: string;
+  username?: string;
+  deviceLocation?: string;
   totalBalance: number;
   bets: any[];
 };
@@ -60,6 +62,8 @@ function AccountDetailsPage() {
     email: "",
     pno: "",
     adhaarid: "",
+    username: "",
+    deviceLocation: "",
     totalBalance: 0
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -140,6 +144,8 @@ function AccountDetailsPage() {
           email: editFormData.email,
           pno: editFormData.pno,
           adhaarid: editFormData.adhaarid,
+          username: editFormData.username,
+          deviceLocation: editFormData.deviceLocation,
           totalBalance: editFormData.totalBalance
         }),
         {
@@ -173,6 +179,8 @@ function AccountDetailsPage() {
           email: newAccount.email,
           pno: newAccount.pno,
           adhaarid: newAccount.adhaarid,
+          username: newAccount.username,
+          deviceLocation: newAccount.deviceLocation,
           totalBalance: newAccount.totalBalance
         }),
         {
@@ -183,6 +191,8 @@ function AccountDetailsPage() {
               email: "",
               pno: "",
               adhaarid: "",
+              username: "",
+              deviceLocation: "",
               totalBalance: 0
             });
             setIsDialogOpen(false);
@@ -258,6 +268,28 @@ function AccountDetailsPage() {
               </div>
               
               <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input 
+                  id="username" 
+                  name="username" 
+                  value={newAccount.username || ''}
+                  onChange={handleInputChange}
+                  placeholder="Username" 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="deviceLocation">Device Location</Label>
+                <Input 
+                  id="deviceLocation" 
+                  name="deviceLocation" 
+                  value={newAccount.deviceLocation || ''}
+                  onChange={handleInputChange}
+                  placeholder="Device Location" 
+                />
+              </div>
+              
+              <div className="space-y-2">
                 <Label htmlFor="totalBalance">Initial Balance (₹)</Label>
                 <Input 
                   id="totalBalance" 
@@ -287,12 +319,13 @@ function AccountDetailsPage() {
       ) : (
         <div className="rounded-lg border overflow-hidden overflow-x-auto">
           <Table>
-
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead>Email</TableHead>
                 <TableHead>Phone Number</TableHead>
                 <TableHead className="hidden sm:table-cell">Adhaar ID</TableHead>
+                <TableHead className="hidden md:table-cell">Username</TableHead>
+                <TableHead className="hidden lg:table-cell">Device/Location</TableHead>
                 <TableHead className="text-right">Balance</TableHead>
                 <TableHead className="w-[100px] sm:w-[120px]">Actions</TableHead>
               </TableRow>
@@ -322,6 +355,22 @@ function AccountDetailsPage() {
                         <Input
                           name="adhaarid"
                           value={editFormData?.adhaarid || ''}
+                          onChange={handleEditInputChange}
+                          className="max-w-[120px] sm:max-w-[150px]"
+                        />
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Input
+                          name="username"
+                          value={editFormData?.username || ''}
+                          onChange={handleEditInputChange}
+                          className="max-w-[120px] sm:max-w-[150px]"
+                        />
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <Input
+                          name="deviceLocation"
+                          value={editFormData?.deviceLocation || ''}
                           onChange={handleEditInputChange}
                           className="max-w-[120px] sm:max-w-[150px]"
                         />
@@ -361,6 +410,8 @@ function AccountDetailsPage() {
                       <TableCell className="max-w-[120px] truncate">{account.email}</TableCell>
                       <TableCell>{account.pno}</TableCell>
                       <TableCell className="hidden sm:table-cell">{account.adhaarid}</TableCell>
+                      <TableCell className="hidden md:table-cell">{account.username || '-'}</TableCell>
+                      <TableCell className="hidden lg:table-cell">{account.deviceLocation || '-'}</TableCell>
                       <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
                       <TableCell>
                         <div className="flex space-x-1 sm:space-x-2">
