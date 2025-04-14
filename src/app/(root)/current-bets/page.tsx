@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Trophy, Users, Award } from "lucide-react";
+import { ChevronDown, ChevronUp, Trophy, Users, Award, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +28,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { MoneyValue } from "@/components/ui/money-value";
 
 type Bet = {
   team1: {
@@ -204,15 +205,16 @@ function CurrentBetPage() {
   }, [accounts]);
   
   return (
-    <div className="container mx-auto py-8 px-4 sm:px-6">
+    <div className="container mx-auto py-8 px-4 sm:px-6 bg-white dark:bg-[#0F212E] text-black dark:text-white">
       <h1 className="text-2xl font-bold mb-6">Current Matches</h1>
       
       {matches.length === 0 ? (
-        <Card>
+        <Card className="bg-white dark:bg-[#1A2C3A] border-gray-200 dark:border-gray-600">
           <CardContent className="py-10">
             <div className="text-center">
-              <p className="text-muted-foreground mb-4">No active matches found</p>
-              <Button variant="outline" onClick={() => window.location.href = "/place-bet"}>
+              <p className="text-gray-500 dark:text-gray-300 mb-4">No active matches found</p>
+              <Button variant="outline" onClick={() => window.location.href = "/place-bet"} 
+                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#223541]">
                 Place Your First Bet
               </Button>
             </div>
@@ -224,17 +226,17 @@ function CurrentBetPage() {
             const matchId = `${match.team1}-vs-${match.team2}`;
             
             return (
-              <Card key={matchId} className="overflow-hidden">
+              <Card key={matchId} className="overflow-hidden bg-white dark:bg-[#1A2C3A] border-gray-200 dark:border-gray-600">
                 <div className="flex items-center justify-between p-4 py-3 flex-wrap gap-2">
                   <div 
-                    className="flex-1 cursor-pointer hover:bg-muted/20 min-w-[200px]"
+                    className="flex-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#223541] min-w-[200px]"
                     onClick={() => toggleMatch(matchId)}
                   >
-                    <h3 className="text-lg font-medium flex items-center gap-2">
-                      <Trophy className="h-4 w-4 text-primary" />
+                    <h3 className="text-lg font-medium flex items-center gap-2 text-black dark:text-white">
+                      <Trophy className="h-4 w-4 text-gray-700 dark:text-gray-300" />
                       {match.team1} vs {match.team2}
                     </h3>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1">
                       <Users className="h-3 w-3" /> {match.bets.length} {match.bets.length === 1 ? 'bet' : 'bets'} placed
                     </p>
                   </div>
@@ -242,76 +244,66 @@ function CurrentBetPage() {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      className="flex items-center gap-1"
+                      className="flex items-center gap-1 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#223541]"
                       onClick={() => handleSettleBet(matchId, match.team1, match.team2)}
                     >
                       <Award className="h-4 w-4" /> <span className="hidden sm:inline">Settle Bet</span>
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => toggleMatch(matchId)}>
+                    <Button variant="ghost" size="sm" onClick={() => toggleMatch(matchId)}
+                      className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#223541]">
                       {expandedMatch === matchId ? <ChevronUp /> : <ChevronDown />}
                     </Button>
                   </div>
                 </div>
                 
                 {expandedMatch === matchId && (
-                  <div className="bg-muted/10 border-t pt-2">
-                    <div className="p-4 grid gap-4">
-                      {match.bets.map((item, betIndex) => {
-                        const selectedTeam = getSelectedTeam(item.bet);
-                        
-                        return (
-                          <Card key={betIndex} className="relative">
-                            <div className="absolute top-3 right-3">
-                              <Badge variant="outline" className="hidden sm:inline-flex">{formatDate(item.bet.timestamp)}</Badge>
-                            </div>
-                            <CardHeader className="pb-2">
-                              <CardTitle className="text-base flex items-center gap-2 pr-4">
-                                Account: {item.account.email}
-                              </CardTitle>
-                              <CardDescription>
-                                Balance: ₹{item.account.totalBalance.toFixed(2)}
-                                <span className="block sm:hidden text-xs mt-1">
+                  <div className="p-4 pt-0 bg-gray-50 dark:bg-[#223541] space-y-3">
+                    {match.bets.map((item, betIndex) => {
+                      const selectedTeam = getSelectedTeam(item.bet);
+                      
+                      return (
+                        <Card key={`${matchId}-bet-${betIndex}`} className="bg-white dark:bg-[#1A2C3A] border-gray-200 dark:border-gray-600">
+                          <CardContent className="p-4 flex flex-col md:flex-row gap-4">
+                            <div className="flex-1">
+                              <div className="mb-2">
+                                <Badge variant="outline" className="mb-1 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300">
                                   {formatDate(item.bet.timestamp)}
-                                </span>
-                              </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="grid gap-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div className={`p-3 rounded-lg border ${selectedTeam === item.bet.team1 ? 'bg-primary/10 border-primary' : 'border-muted'}`}>
-                                    <p className="font-medium text-sm sm:text-base">{item.bet.team1.name}</p>
-                                    <p className="text-xs sm:text-sm text-muted-foreground">Odds: {item.bet.team1.odds}</p>
-                                    {selectedTeam === item.bet.team1 && (
-                                      <Badge className="mt-2">Selected</Badge>
-                                    )}
-                                  </div>
-                                  <div className={`p-3 rounded-lg border ${selectedTeam === item.bet.team2 ? 'bg-primary/10 border-primary' : 'border-muted'}`}>
-                                    <p className="font-medium text-sm sm:text-base">{item.bet.team2.name}</p>
-                                    <p className="text-xs sm:text-sm text-muted-foreground">Odds: {item.bet.team2.odds}</p>
-                                    {selectedTeam === item.bet.team2 && (
-                                      <Badge className="mt-2">Selected</Badge>
-                                    )}
-                                  </div>
+                                </Badge>
+                                <h4 className="text-md font-medium text-black dark:text-white">
+                                  {item.account.email}
+                                </h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-300">
+                                  Balance: <MoneyValue value={item.account.totalBalance} />
+                                </p>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <p className="text-gray-600 dark:text-gray-300">Team Selected</p>
+                                  <p className="font-medium text-black dark:text-white">{selectedTeam?.name || "N/A"}</p>
                                 </div>
-                                
-                                <div className="mt-2 pt-4 border-t">
-                                  <div className="flex justify-between">
-                                    <div>
-                                      <p className="text-sm text-muted-foreground">Bet Amount</p>
-                                      <p className="font-medium">₹{item.bet.betAmount.toFixed(2)}</p>
-                                    </div>
-                                    <div>
-                                      <p className="text-sm text-muted-foreground">Total Pot</p>
-                                      <p className="font-medium">₹{item.bet.dividedBy.toFixed(2)}</p>
-                                    </div>
-                                  </div>
+                                <div>
+                                  <p className="text-gray-600 dark:text-gray-300">Odds</p>
+                                  <p className="font-medium text-black dark:text-white">{selectedTeam?.odds.toFixed(2) || "N/A"}</p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-600 dark:text-gray-300">Bet Amount</p>
+                                  <p className="font-medium text-black dark:text-white">
+                                    <MoneyValue value={item.bet.betAmount} />
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-600 dark:text-gray-300">Divided By</p>
+                                  <p className="font-medium text-black dark:text-white">
+                                    <MoneyValue value={item.bet.dividedBy} />
+                                  </p>
                                 </div>
                               </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                    </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
                 )}
               </Card>
@@ -321,17 +313,17 @@ function CurrentBetPage() {
       )}
       
       <Dialog open={isSettleDialogOpen} onOpenChange={setIsSettleDialogOpen}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col max-w-[calc(100%-2rem)]">
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-hidden flex flex-col max-w-[calc(100%-2rem)] bg-white dark:bg-[#1A2C3A] text-black dark:text-white border-gray-200 dark:border-gray-600">
           <DialogHeader>
-            <DialogTitle>Settle Bet</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-black dark:text-white">Settle Bet</DialogTitle>
+            <DialogDescription className="text-gray-500 dark:text-gray-300">
               Select the match result and additional options to settle this bet.
             </DialogDescription>
           </DialogHeader>
           
           <div className="py-4 space-y-6 overflow-y-auto pr-2">
             <div className="space-y-4">
-              <h4 className="font-medium">Which team won?</h4>
+              <h4 className="font-medium text-black dark:text-white">Which team won?</h4>
               <RadioGroup 
                 value={winningTeam} 
                 onValueChange={setWinningTeam}
@@ -340,9 +332,9 @@ function CurrentBetPage() {
                 {selectedMatchId && (
                   <>
                     {selectedMatchId.split("-vs-").map((team, i) => (
-                      <div key={i} className="flex items-center space-x-2 border p-2 rounded-md">
+                      <div key={i} className="flex items-center space-x-2 border border-gray-200 dark:border-gray-600 p-2 rounded-md">
                         <RadioGroupItem value={team} id={`team-${i}`} />
-                        <Label htmlFor={`team-${i}`}>{team}</Label>
+                        <Label htmlFor={`team-${i}`} className="text-black dark:text-white">{team}</Label>
                       </div>
                     ))}
                   </>
@@ -351,17 +343,17 @@ function CurrentBetPage() {
             </div>
             
             <div className="space-y-4">
-              <h4 className="font-medium">Additional Options</h4>
+              <h4 className="font-medium text-black dark:text-white">Additional Options</h4>
               <div className="flex flex-col space-y-2">
-                <div className="flex items-center space-x-2 border p-2 rounded-md">
+                <div className="flex items-center space-x-2 border border-gray-200 dark:border-gray-600 p-2 rounded-md">
                   <Checkbox id="losing-six" checked={losingTeamHitSix} onCheckedChange={checked => setLosingTeamHitSix(checked === true)} />
-                  <Label htmlFor="losing-six">Losing team hit six</Label>
+                  <Label htmlFor="losing-six" className="text-black dark:text-white">Losing team hit six</Label>
                 </div>
               </div>
             </div>
-
+            
             <div className="space-y-4">
-              <h4 className="font-medium">Cashout Options</h4>
+              <h4 className="font-medium text-black dark:text-white">Cashout Options</h4>
               <div className="space-y-4">
                 {selectedMatchId && matches.find(m => `${m.team1}-vs-${m.team2}` === selectedMatchId)?.bets
                   .filter(item => {
@@ -373,11 +365,11 @@ function CurrentBetPage() {
                     const cashoutAmount = cashoutAccounts.find(acc => acc.accountId === item.account.id)?.amount || 0;
                     
                     return (
-                      <div key={index} className="border p-3 rounded-md">
+                      <div key={index} className="border border-gray-200 dark:border-gray-600 p-3 rounded-md">
                         <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
                           <div>
-                            <p className="font-medium text-sm truncate max-w-[200px]">{item.account.email}</p>
-                            <p className="text-sm text-muted-foreground">Bet Amount: ₹{item.bet.betAmount.toFixed(2)}</p>
+                            <p className="font-medium text-sm truncate max-w-[200px] text-black dark:text-white">{item.account.email}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">Bet Amount: <MoneyValue value={item.bet.betAmount} /></p>
                           </div>
                           <Checkbox 
                             id={`cashout-${index}`}
@@ -393,17 +385,17 @@ function CurrentBetPage() {
                         </div>
                         {isCashedOut && (
                           <div className="mt-2">
-                            <Label htmlFor={`amount-${index}`} className="mb-2 block">Cashout Amount (₹)</Label>
+                            <Label htmlFor={`amount-${index}`} className="mb-2 block text-black dark:text-white">Cashout Amount (₹)</Label>
                             <div className="flex gap-2">
                               <Input 
                                 id={`amount-${index}`}
-                                type="number"
+                                type="number" 
                                 min="1"
                                 step="1"
                                 value={cashoutAmount || ""}
                                 onChange={(e) => handleCashoutAmountChange(item.account.id, parseFloat(e.target.value) || 0)}
                                 placeholder="Enter amount"
-                                className="w-full"
+                                className="w-full bg-white dark:bg-[#223541] border-gray-200 dark:border-gray-600 text-black dark:text-white"
                               />
                             </div>
                           </div>
@@ -415,9 +407,15 @@ function CurrentBetPage() {
             </div>
           </div>
           
-          <DialogFooter className="pt-2 border-t mt-2 flex-col sm:flex-row gap-2 sm:gap-0">
-            <Button variant="ghost" onClick={() => setIsSettleDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSubmitSettleBet}>Settle Bet</Button>
+          <DialogFooter className="pt-2 border-t border-gray-200 dark:border-gray-600 mt-2 flex-col sm:flex-row gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => setIsSettleDialogOpen(false)} 
+              className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#223541]">
+              Cancel
+            </Button>
+            <Button onClick={handleSubmitSettleBet} 
+              className="bg-gray-800 hover:bg-gray-900 text-white">
+              Settle Bet
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

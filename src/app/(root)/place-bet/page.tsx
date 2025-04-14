@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { MoneyValue } from "@/components/ui/money-value";
 
 type Account = {
   id: string;
@@ -151,20 +152,20 @@ function PlaceBetPage() {
   };
   
   return (
-    <div className="container mx-auto py-8 px-4 sm:px-6">
+    <div className="container mx-auto py-8 px-4 sm:px-6 bg-white dark:bg-[#0F212E] text-black dark:text-white">
       <h1 className="text-2xl font-bold mb-6">Place Bet</h1>
       
       {showTeamsForm ? (
-        <Card className="mb-6">
+        <Card className="mb-6 bg-white dark:bg-[#1A2C3A] border border-gray-200 dark:border-gray-600">
           <CardHeader>
-            <CardTitle>Match Details</CardTitle>
+            <CardTitle className="text-black dark:text-white">Match Details</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4 border p-4 rounded-lg border-primary/20">
-                <h3 className="text-lg font-medium">Team 1</h3>
+              <div className="space-y-4 border p-4 rounded-lg border-gray-300 dark:border-gray-500 bg-white dark:bg-[#1A2C3A]">
+                <h3 className="text-lg font-medium text-black dark:text-white">Team 1</h3>
                 <div className="space-y-2">
-                  <Label htmlFor="team1-name">Team Name</Label>
+                  <Label htmlFor="team1-name" className="text-gray-700 dark:text-gray-200">Team Name</Label>
                   <Input 
                     id="team1-name" 
                     name="name" 
@@ -172,10 +173,11 @@ function PlaceBetPage() {
                     onChange={handleTeam1Change}
                     placeholder="Enter team name"
                     required
+                    className="bg-white dark:bg-[#223541] border-gray-300 dark:border-gray-600 text-black dark:text-white"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="team1-odds">Odds</Label>
+                  <Label htmlFor="team1-odds" className="text-gray-700 dark:text-gray-200">Odds</Label>
                   <Input 
                     id="team1-odds" 
                     name="odds" 
@@ -186,14 +188,15 @@ function PlaceBetPage() {
                     onChange={handleTeam1Change}
                     placeholder="Enter odds"
                     required
+                    className="bg-white dark:bg-[#223541] border-gray-300 dark:border-gray-600 text-black dark:text-white"
                   />
                 </div>
               </div>
               
-              <div className="space-y-4 border p-4 rounded-lg border-primary/20">
-                <h3 className="text-lg font-medium">Team 2</h3>
+              <div className="space-y-4 border p-4 rounded-lg border-gray-300 dark:border-gray-500 bg-white dark:bg-[#1A2C3A]">
+                <h3 className="text-lg font-medium text-black dark:text-white">Team 2</h3>
                 <div className="space-y-2">
-                  <Label htmlFor="team2-name">Team Name</Label>
+                  <Label htmlFor="team2-name" className="text-gray-700 dark:text-gray-200">Team Name</Label>
                   <Input 
                     id="team2-name" 
                     name="name" 
@@ -201,10 +204,11 @@ function PlaceBetPage() {
                     onChange={handleTeam2Change}
                     placeholder="Enter team name"
                     required
+                    className="bg-white dark:bg-[#223541] border-gray-300 dark:border-gray-600 text-black dark:text-white"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="team2-odds">Odds</Label>
+                  <Label htmlFor="team2-odds" className="text-gray-700 dark:text-gray-200">Odds</Label>
                   <Input 
                     id="team2-odds" 
                     name="odds" 
@@ -215,6 +219,7 @@ function PlaceBetPage() {
                     onChange={handleTeam2Change}
                     placeholder="Enter odds"
                     required
+                    className="bg-white dark:bg-[#223541] border-gray-300 dark:border-gray-600 text-black dark:text-white"
                   />
                 </div>
               </div>
@@ -222,7 +227,7 @@ function PlaceBetPage() {
             
             <div className="mt-6 grid grid-cols-1 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="dividedBy">Divided By (₹)</Label>
+                <Label htmlFor="dividedBy" className="text-gray-700 dark:text-gray-200">Divided By (₹)</Label>
                 <Input 
                   id="dividedBy" 
                   type="number"
@@ -232,104 +237,135 @@ function PlaceBetPage() {
                   onChange={handleDividedByChange}
                   placeholder="Enter total amount to be divided"
                   required
+                  className="bg-white dark:bg-[#223541] border-gray-300 dark:border-gray-600 text-black dark:text-white"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  For Team 1: ₹{(dividedBy / team1.odds).toFixed(2)} will be deducted per account
+                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
+                  For Team 1: <MoneyValue value={dividedBy / team1.odds} className="text-xs" /> will be deducted per account
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  For Team 2: ₹{(dividedBy / team2.odds).toFixed(2)} will be deducted per account
+                <p className="text-xs text-gray-500 dark:text-gray-300">
+                  For Team 2: <MoneyValue value={dividedBy / team2.odds} className="text-xs" /> will be deducted per account
                 </p>
               </div>
             </div>
             
-            <Button className="mt-6 w-full" onClick={handleContinue}>
+            <Button className="mt-6 w-full bg-gray-800 hover:bg-gray-900 dark:bg-gray-600 dark:hover:bg-gray-700 text-white cursor-pointer" onClick={handleContinue}>
               Continue to Account Selection
             </Button>
           </CardContent>
         </Card>
       ) : (
         <>
-          <Card className="mb-6">
+          <Card className="mb-6 bg-white dark:bg-[#1A2C3A] border border-gray-200 dark:border-gray-600">
             <CardHeader>
-              <CardTitle>Match Summary</CardTitle>
+              <CardTitle className="text-black dark:text-white">Match Summary</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Team 1</p>
-                  <p className="font-medium">{team1.name} ({team1.odds})</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-300">Team 1</p>
+                  <p className="font-medium text-black dark:text-white">{team1.name} ({team1.odds})</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Team 2</p>
-                  <p className="font-medium">{team2.name} ({team2.odds})</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-300">Team 2</p>
+                  <p className="font-medium text-black dark:text-white">{team2.name} ({team2.odds})</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Bet Details</p>
-                  <p className="font-medium">Amount: ₹{dividedBy}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Team 1 accounts: ₹{(dividedBy / team1.odds).toFixed(2)} each
+                  <p className="text-sm text-gray-500 dark:text-gray-300">Bet Details</p>
+                  <p className="font-medium text-black dark:text-white">Amount: <MoneyValue value={dividedBy} /></p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
+                    Team 1 accounts: <MoneyValue value={dividedBy / team1.odds} className="text-xs" /> each
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    Team 2 accounts: ₹{(dividedBy / team2.odds).toFixed(2)} each
+                  <p className="text-xs text-gray-500 dark:text-gray-300">
+                    Team 2 accounts: <MoneyValue value={dividedBy / team2.odds} className="text-xs" /> each
                   </p>
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="mt-4" onClick={handleBack}>
+              <Button variant="outline" size="sm" className="mt-4 border-gray-300 dark:border-gray-600 bg-white hover:bg-gray-100 dark:bg-[#223541] dark:hover:bg-[#2A3F50] text-gray-700 dark:text-gray-200" onClick={handleBack}>
                 Back to Edit
               </Button>
             </CardContent>
           </Card>
           
           {accounts.length === 0 ? (
-            <Card>
+            <Card className="bg-white dark:bg-[#1A2C3A] border border-gray-200 dark:border-gray-600">
               <CardContent className="py-6">
-                <p className="text-center text-muted-foreground">
+                <p className="text-center text-gray-500 dark:text-gray-300">
                   No accounts available. Please add accounts before placing a bet.
                 </p>
               </CardContent>
             </Card>
           ) : (
-            <div className="rounded-lg border overflow-hidden overflow-x-auto">
-              <Table>
-                <TableHeader className="bg-muted/50">
-                  <TableRow>
-                    <TableHead>Email</TableHead>
-                    <TableHead className="text-right">Balance</TableHead>
-                    <TableHead className="w-[80px] sm:w-[120px] text-center">{team1.name}</TableHead>
-                    <TableHead className="w-[80px] sm:w-[120px] text-center">{team2.name}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {accounts.map((account: Account) => (
-                    <TableRow key={account.id} className="hover:bg-muted/20">
-                      <TableCell className="max-w-[150px] truncate">{account.email}</TableCell>
-                      <TableCell className="text-right">₹{account.totalBalance.toFixed(2)}</TableCell>
-                      <TableCell className="text-center">
-                        <Checkbox
-                          checked={selectedAccounts[account.id] === "team1"}
-                          onCheckedChange={() => handleTeamSelection(account.id, "team1")}
-                          disabled={selectedAccounts[account.id] === "team2"}
-                        />
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Checkbox
-                          checked={selectedAccounts[account.id] === "team2"}
-                          onCheckedChange={() => handleTeamSelection(account.id, "team2")}
-                          disabled={selectedAccounts[account.id] === "team1"}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+            <>
+              <Card className="mb-4 bg-white dark:bg-[#1A2C3A] border border-gray-200 dark:border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-black dark:text-white">Select Accounts</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4 px-4 py-3 bg-gray-50 dark:bg-[#223541] rounded-lg">
+                    <h3 className="text-sm font-medium mb-2 text-black dark:text-white">Bet Summary</h3>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                      <p>Match: {team1.name} vs {team2.name}</p>
+                      <p>Total pot: <MoneyValue value={dividedBy} /></p>
+                      <p>Team 1 accounts: <MoneyValue value={dividedBy / team1.odds} /> each</p>
+                      <p>Team 2 accounts: <MoneyValue value={dividedBy / team2.odds} /> each</p>
+                    </div>
+                  </div>
+                  
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader className="bg-white dark:bg-[#1A2C3A]">
+                        <TableRow className="border-b border-gray-200 dark:border-gray-600">
+                          <TableHead className="text-gray-700 dark:text-gray-200">Email</TableHead>
+                          <TableHead className="text-right text-gray-700 dark:text-gray-200">Balance</TableHead>
+                          <TableHead className="text-center text-gray-700 dark:text-gray-200">{team1.name}</TableHead>
+                          <TableHead className="text-center text-gray-700 dark:text-gray-200">{team2.name}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {accounts.map((account: Account) => (
+                          <TableRow key={account.id} className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-[#223541]">
+                            <TableCell className="text-black dark:text-white">{account.email}</TableCell>
+                            <TableCell className="text-right text-black dark:text-white">
+                              <MoneyValue value={account.totalBalance} />
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <div className="flex justify-center">
+                                <Checkbox 
+                                  checked={selectedAccounts[account.id] === "team1"}
+                                  onCheckedChange={() => handleTeamSelection(account.id, "team1")}
+                                  disabled={selectedAccounts[account.id] === "team2" || account.totalBalance < dividedBy / team1.odds}
+                                  className="text-gray-900 dark:text-gray-100"
+                                />
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <div className="flex justify-center">
+                                <Checkbox 
+                                  checked={selectedAccounts[account.id] === "team2"}
+                                  onCheckedChange={() => handleTeamSelection(account.id, "team2")}
+                                  disabled={selectedAccounts[account.id] === "team1" || account.totalBalance < dividedBy / team2.odds}
+                                  className="text-gray-900 dark:text-gray-100"
+                                />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <div className="flex justify-between gap-4">
+                <Button variant="outline" onClick={handleBack} className="px-6 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#223541]">
+                  Back
+                </Button>
+                <Button onClick={handlePlaceBet} className="px-6 bg-gray-800 hover:bg-gray-900 dark:bg-gray-600 dark:hover:bg-gray-700 text-white cursor-pointer">
+                  Place Bet
+                </Button>
+              </div>
+            </>
           )}
-          
-          <div className="mt-6 flex justify-end">
-            <Button disabled={Object.keys(selectedAccounts).length === 0} onClick={handlePlaceBet}>
-              Place Bet
-            </Button>
-          </div>
         </>
       )}
     </div>

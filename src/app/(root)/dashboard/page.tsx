@@ -19,6 +19,7 @@ import { UserButton } from "@clerk/nextjs";
 import { useState } from "react";
 import Link from "next/link";
 import { ModeToggle } from "@/components/ModeToggle";
+import { MoneyValue } from "@/components/ui/money-value";
 
 type Account = {
   id: string;
@@ -112,7 +113,7 @@ function DashboardPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 bg-white dark:bg-black md:pt-6 pt-16">
+    <div className="p-4 sm:p-6 space-y-6 bg-white dark:bg-[#0F212E] md:pt-6 pt-16">
       {/* Header with UserButton */}
       <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
         <h1 className="text-2xl font-bold text-black dark:text-white">Dashboard</h1>
@@ -125,58 +126,62 @@ function DashboardPage() {
       {/* Financial cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8">
         {/* Total balance card */}
-        <Card className="shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+        <Card className="shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#1A2C3A]">
           <CardHeader className="pb-2">
             <CardTitle className="text-black dark:text-white">Total Balance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-black dark:text-white">₹{totalBalance.toFixed(2)}</div>
+            <div className="text-3xl font-bold text-black dark:text-white tracking-tight">
+              <MoneyValue value={totalBalance} className="text-3xl font-bold" />
+            </div>
           </CardContent>
         </Card>
 
         {/* Profit/Loss card */}
-        <Card className="shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+        <Card className="shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#1A2C3A]">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-black dark:text-white">{isProfitable ? 'Net Profit' : 'Net Loss'}</CardTitle>
             <Button
               onClick={handleResetProfitLoss}
               variant="outline"
               size="sm"
-              className="h-8 border-emerald-500 text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 dark:border-emerald-800"
+              className="h-8 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#223541]"
             >
               Reset
             </Button>
           </CardHeader>
           <CardContent>
-            <div className={`text-3xl font-bold ${isProfitable ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>
-              ₹{Math.abs(netProfitOrLoss).toFixed(2)}
+            <div className={`text-3xl font-bold tracking-tight ${isProfitable ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>
+              <MoneyValue value={netProfitOrLoss} showSign={true} className="text-3xl font-bold" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Accounts table or No Accounts Message */}
-      <Card className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+      <Card className="border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#1A2C3A]">
         <CardHeader>
           <CardTitle className="text-black dark:text-white">Accounts</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {accounts.length > 0 ? (
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-b border-gray-200 dark:border-gray-800">
-                    <TableHead className="text-black dark:text-white">Email</TableHead>
-                    <TableHead className="text-right text-black dark:text-white">Balance</TableHead>
-                    <TableHead className="text-right text-black dark:text-white">Actions</TableHead>
+              <Table className="w-full">
+                <TableHeader className="bg-white dark:bg-[#1A2C3A]">
+                  <TableRow className="border-b border-gray-200 dark:border-gray-600">
+                    <TableHead className="text-gray-700 dark:text-gray-200 pl-4">Email</TableHead>
+                    <TableHead className="text-right text-gray-700 dark:text-gray-200">Balance</TableHead>
+                    <TableHead className="text-right text-gray-700 dark:text-gray-200 pr-4">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {accounts.map((account: Account) => (
-                    <TableRow key={account.id} className="border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900">
-                      <TableCell className="max-w-[150px] truncate text-black dark:text-white">{account.email}</TableCell>
-                      <TableCell className="text-right text-black dark:text-white">₹{account.totalBalance.toFixed(2)}</TableCell>
-                      <TableCell>
+                    <TableRow key={account.id} className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-[#223541]">
+                      <TableCell className="max-w-[150px] truncate text-black dark:text-white pl-4">{account.email}</TableCell>
+                      <TableCell className="text-right text-black dark:text-white font-semibold">
+                        <MoneyValue value={account.totalBalance} />
+                      </TableCell>
+                      <TableCell className="pr-4">
                         <div className="flex justify-end gap-1 sm:gap-2 flex-wrap">
                           {activeAccount === account.id && activeAction ? (
                             <>
@@ -187,15 +192,15 @@ function DashboardPage() {
                                 value={actionAmount || ""}
                                 onChange={(e) => setActionAmount(parseFloat(e.target.value) || 0)}
                                 placeholder="Amount"
-                                className="w-20 sm:w-32 border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-black dark:text-white"
+                                className="w-20 sm:w-32 border-gray-300 dark:border-gray-600 bg-white dark:bg-[#223541] text-black dark:text-white font-semibold"
                               />
                               <Button 
                                 size="sm"
                                 variant={activeAction === "deposit" ? "default" : "outline"}
                                 onClick={handleActionSubmit}
                                 className={activeAction === "deposit" ? 
-                                  "bg-emerald-600 hover:bg-emerald-700 text-white" : 
-                                  "border-emerald-500 text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 dark:border-emerald-800"}
+                                  "bg-gray-800 hover:bg-gray-900 dark:bg-gray-500 dark:hover:bg-gray-600 text-white" : 
+                                  "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#223541]"}
                               >
                                 {activeAction === "deposit" ? "Deposit" : "Withdraw"}
                               </Button>
@@ -206,7 +211,7 @@ function DashboardPage() {
                                   setActiveAccount(null);
                                   setActiveAction(null);
                                 }}
-                                className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800"
+                                className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#223541]"
                               >
                                 Cancel
                               </Button>
@@ -216,7 +221,7 @@ function DashboardPage() {
                               <Button 
                                 size="sm"
                                 onClick={() => handleActionClick(account.id, "deposit")}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                                className="bg-gray-800 hover:bg-gray-900 dark:bg-gray-500 dark:hover:bg-gray-600 text-white"
                               >
                                 Deposit
                               </Button>
@@ -224,7 +229,7 @@ function DashboardPage() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleActionClick(account.id, "withdrawal")}
-                                className="border-emerald-500 text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 dark:border-emerald-800"
+                                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#223541]"
                               >
                                 Withdraw
                               </Button>
@@ -239,11 +244,11 @@ function DashboardPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8">
-              <p className="text-center text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-center text-gray-500 dark:text-gray-300 mb-4">
                 You don't have any accounts yet. Add an account to get started.
               </p>
               <Link href="/account-details">
-                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">Go to Accounts</Button>
+                <Button className="bg-gray-800 hover:bg-gray-900 dark:bg-gray-500 dark:hover:bg-gray-600 text-white cursor-pointer">Go to Accounts</Button>
               </Link>
             </div>
           )}

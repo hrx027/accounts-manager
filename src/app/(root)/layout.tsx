@@ -6,10 +6,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-black">
+    <div className="h-screen flex flex-col bg-white dark:bg-[#0F212E]">
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto flex flex-col bg-white dark:bg-black text-black dark:text-white md:ml-60 w-full">
+        <main className="flex-1 overflow-y-auto flex flex-col bg-white dark:bg-[#0F212E] text-black dark:text-white md:ml-60 w-full">
           <div className="flex-1">
             {children}
           </div>

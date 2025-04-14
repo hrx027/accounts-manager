@@ -72,7 +72,7 @@ export function Sidebar() {
             onClick={() => setIsOpen(false)}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
               isActive 
-                ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
                 : "hover:bg-gray-100 dark:hover:bg-gray-800 text-black dark:text-white"
             }`}
           >
@@ -86,8 +86,8 @@ export function Sidebar() {
 
   const renderLogo = () => (
     <div className="flex items-center gap-2">
-      <div className="w-8 h-8 bg-black dark:bg-emerald-600 rounded-lg flex items-center justify-center">
-        <span className="text-lg font-bold text-white dark:text-black">S</span>
+      <div className="w-8 h-8 bg-gray-800 dark:bg-gray-600 rounded-lg flex items-center justify-center">
+        <span className="text-lg font-bold text-white">S</span>
       </div>
       <h2 className="text-xl font-bold text-black dark:text-white">Stake Manager</h2>
     </div>
@@ -96,7 +96,7 @@ export function Sidebar() {
   // For mobile view, render a slide-out drawer
   if (isMobileView) {
     return (
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 py-2 px-4">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#0F212E] border-b border-gray-200 dark:border-gray-800 py-2 px-4">
         <div className="flex items-center justify-between">
           {renderLogo()}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -106,7 +106,7 @@ export function Sidebar() {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[240px] sm:w-[300px] bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800 z-50">
+            <SheetContent side="left" className="w-[240px] sm:w-[300px] bg-white dark:bg-[#0F212E] border-r border-gray-200 dark:border-gray-800 z-50">
               <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
                 {renderLogo()}
                 <Button 
@@ -129,7 +129,7 @@ export function Sidebar() {
 
   // For desktop view, render a static sidebar
   return (
-    <div className="hidden md:flex md:w-60 md:flex-col md:fixed md:inset-y-0 md:z-30 bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800">
+    <div className="hidden md:flex md:w-60 md:flex-col md:fixed md:inset-y-0 md:z-30 bg-white dark:bg-[#0F212E] border-r border-gray-200 dark:border-gray-700">
       <div className="flex-1 flex flex-col min-h-0 pt-5">
         <div className="flex items-center justify-center px-4 mb-6">
           {renderLogo()}
